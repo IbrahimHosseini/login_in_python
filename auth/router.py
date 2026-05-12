@@ -7,7 +7,7 @@ from .service import verify_token, create_access_token, create_refresh_token
 router = APIRouter(prefix = "/auth", tags = ["auth"])
 
 fake_user = {"user@test.com": {"id": 1, "password": "hashed_pass"}}
-refresh_tokens = set()
+refresh_tokens = set() # change with BD
 
 @router.post("/login", response_model = Token)
 async def login(email: str, password: str):
