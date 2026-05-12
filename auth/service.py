@@ -19,7 +19,7 @@ def create_refresh_token(user_id: int) -> str:
 
 def verify_token(token: str) -> dict:
 	try:
-		payload = jwt.decode(token, settings.SECRET_KEY, algorithm = [settings.ALGORITHM])
+		payload = jwt.decode(token, settings.SECRET_KEY, algorithms = [settings.ALGORITHM])
 		return payload
 	except JWTError:
 		raise ValueError("Invalid Token") 
