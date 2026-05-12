@@ -34,7 +34,7 @@ async def login(email: str, password: str):
 @router.post("/refresh", response_model = Token)
 async def refresh(data: RefreshRequest):
 
-	refresh_token = data["refresh_token"]
+	refresh_token = data.refresh_token
 
 	if refresh_token not in  refresh_tokens:
 		raise HTTPException(status_code = 401, detail = "Invalid refresh token")
