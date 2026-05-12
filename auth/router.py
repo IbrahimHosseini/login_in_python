@@ -18,7 +18,7 @@ async def login(email: str, password: str):
 
 	access_token = create_access_token(user["id"])
 	refresh_token = create_refresh_token(user["id"])
-	refresh_token.add(refresh_token)
+	refresh_tokens.add(refresh_token)
 
 	return Token(
 		access_token = access_token,
