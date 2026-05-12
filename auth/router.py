@@ -59,8 +59,8 @@ async def refresh(data: RefreshRequest):
 
 
 @router.post("/logout")
-async def logout(refresh_token: str):
-	refresh_tokens.discard(refresh_token)
+async def logout(data: RefreshRequest):
+	refresh_tokens.discard(data.refresh_token)
 	return {"message": "Logged out"}
 
 
