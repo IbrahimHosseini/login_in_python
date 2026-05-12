@@ -9,3 +9,6 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
 	user_id: int | None = None
+
+class RefreshRequest(BaseModel):
+    refresh_token: str

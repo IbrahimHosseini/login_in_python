@@ -1,7 +1,7 @@
 # router.py
 
 from fastapi import APIRouter, HTTPException, Depends
-from .schemas import Token
+from .schemas import Token, RefreshRequest
 from .service import verify_token, create_access_token, create_refresh_token, verify_password, hash_password
 
 router = APIRouter(prefix = "/auth", tags = ["auth"])
@@ -32,7 +32,10 @@ async def login(email: str, password: str):
 
 
 @router.post("/refresh", response_model = Token)
-async def refresh(refresh_token: str):
+async def refresh(data: RefreshRequest):
+
+	refresh_token = data["refresh_token"]
+
 	if refresh_token not in  refresh_tokens:
 		raise HTTPException(status_code = 401, detail = "Invalid refresh token")
 
