@@ -7,12 +7,12 @@ from .dependencies import get_current_user
 
 router = APIRouter(prefix = "/auth", tags = ["auth"])
 
-fake_user = {"user@test.com": {"id": 1, "password": hash_password("testpass123")}}
+fake_users = {"user@test.com": {"id": 1, "password": hash_password("testpass123")}}
 refresh_tokens = set() # change with BD
 
 @router.post("/login", response_model = Token)
 async def login(email: str, password: str):
-	user = fake_user.get(email)
+	user = fake_users.get(email)
 
 	if not user:
 		raise HTTPException(status_code = 401, detail = "Invalid credentials")
