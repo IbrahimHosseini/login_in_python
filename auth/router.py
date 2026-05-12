@@ -2,11 +2,11 @@
 
 from fastapi import APIRouter, HTTPException, Depends
 from .schemas import Token
-from .service import verify_token, create_access_token, create_refresh_token 
+from .service import verify_token, create_access_token, create_refresh_token, verify_password, hash_password
 
 router = APIRouter(prefix = "/auth", tags = ["auth"])
 
-fake_user = {"user@test.com": {"id": 1, "password": "hashed_pass"}}
+fake_user = {"user@test.com": {"id": 1, "password": hash_password("testpass123")}}
 refresh_tokens = set() # change with BD
 
 @router.post("/login", response_model = Token)
@@ -14,6 +14,10 @@ async def login(email: str, password: str):
 	user = fake_user.get(email)
 
 	if not user:
+		raise HTTPException(status_code = 401, detail = "Invalid credentials")
+
+	
+	if not verify_password(password, hashed = user["password"]):
 		raise HTTPException(status_code = 401, detail = "Invalid credentials")
 
 	access_token = create_access_token(user["id"])
