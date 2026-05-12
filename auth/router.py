@@ -3,6 +3,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from .schemas import Token, RefreshRequest
 from .service import verify_token, create_access_token, create_refresh_token, verify_password, hash_password
+from .dependencies import get_current_user
 
 router = APIRouter(prefix = "/auth", tags = ["auth"])
 
@@ -62,6 +63,11 @@ async def refresh(data: RefreshRequest):
 async def logout(data: RefreshRequest):
 	refresh_tokens.discard(data.refresh_token)
 	return {"message": "Logged out"}
+
+
+@router.get("/me")
+async def get_me(user_id: str = Depends(get_current_user)):
+	return {"user_id": user_id}
 
 
 
