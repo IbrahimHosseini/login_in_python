@@ -1,12 +1,18 @@
 # main.py
 
 from fastapi import FastAPI, Request
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import JSONResponse
 from auth.router import router
+from users.router import user_router
 
 
-app = FastAPI()
+app = FastAPI(
+	title = "My API",
+	swagger_ui_oauth2_redirect_url = "/oauth2-redirect"
+)
 app.include_router(router)
+app.include_router(user_router)
 
 
 @app.exception_handler(Exception)

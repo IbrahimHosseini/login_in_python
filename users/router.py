@@ -1,29 +1,18 @@
-# router.py
+# users/router.py
 
 from fastapi import APIRouter, HTTPException, Depends, status
 from auth.dependencies import get_current_user
-from .schemas import RequestUser, UpdateUser
+from .schemas import RequestUser, UpdateUser, ResponseUser
 from auth.service import hash_password
 from auth.router import fake_users
 
 
-router = APIRouter(prefix = "/users", tags = ["users"])
+user_router = APIRouter(prefix = "/users", tags = ["users"])
 
 next_id = 2
 
-#=========== IS USER EXIST ============================
-def user_exist(id: int) -> bool:
-
-	if id not in fake_users:
-		raise HTTPException(
-				status_code = 401,
-				detail = "User not found"
-		)
-		
-	return fake_users[id]
-
 #=========== CREATE USER ==============================
-@router.post("/users", response_model = RequestUser, status_code = status.HTTP_201_CREATED)
+@user_router.post("/create", response_model = ResponseUser, status_code = status.HTTP_201_CREATED)
 async def create_user(user: RequestUser):
 
 	global next_id
@@ -39,18 +28,82 @@ async def create_user(user: RequestUser):
 
 	next_id += 1
 
+	created_user = ResponseUser(
+		id = new_user["id"],
+		email = new_user["email"]
+	)
+
+	return created_user
+
 #=========== GET USER BY ID ===========================
-@router.get("/users/{id}", response_model = RequestUser)
-async def get_user(id: int, user = Depends(user_exist)):
-	return user
+@user_router.get("/users/{id}", response_model = ResponseUser)
+async def get_user(id: int):
+
+	user = fake_users.get(id)
+
+
+	return ResponseUser(
+		id = user["id"],
+		email = user["email"]
+	)
 
 #=========== UPDATE USER ===========================
-@router.put("/update", response_model = RequestUser)
-async def update_user(id: int, user: UpdateUser, exist_user = Depends(user_exist)):
-	user_data = updates.dict(exclude_unset = True)
-	exist_user.update(user_data)
+@user_router.put("/update/{id}", response_model = RequestUser)
+async def update_user(id: int, user: UpdateUser, current_user_id = Depends(get_current_user)):
 
-	return exist_user
+	if id != int(current_user_id):
+		raise HTTPException(
+			status_code = 403,
+			detail = "Not Authorized"
+		)
 
+	user_data = user.model_dump(exclude_unset = True)
+	fake_users[id].update(user_data)
+
+	updated_user = fake_users.get(id)
+
+	return ResponseUser(
+		id = update_user["id"],
+		email = update_user["email"]
+	)
 
 #=========== DELETE USER ===========================
+@user_router.delete("/delete/{id}", status_code = status.HTTP_204_NO_CONTENT)
+async def delete_user(id: int, current_user_id = Depends(get_current_user)):
+
+	if id != int(current_user_id):
+		raise HTTPException(
+			status_code = 403,
+			detail = "Not Authorized"
+		)
+
+	del fake_users['id']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
