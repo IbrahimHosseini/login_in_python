@@ -47,7 +47,7 @@ async def get_user(id: int):
 	)
 
 #=========== UPDATE USER ===========================
-@user_router.put("/{id}", response_model = RequestUser)
+@user_router.put("/{id}", response_model = ResponseUser)
 async def update_user(id: int, user: UpdateUser, current_user_id = Depends(get_current_user)):
 
 	if id != int(current_user_id):
