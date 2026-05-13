@@ -79,7 +79,7 @@ async def delete_user(id: int, current_user_id = Depends(get_current_user)):
 			status_code = 403,
 			detail = "Not Authorized"
 		)
-
+	
 	del fake_users[id]
 
 

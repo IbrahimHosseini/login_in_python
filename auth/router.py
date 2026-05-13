@@ -67,6 +67,12 @@ async def logout(data: RefreshRequest):
 
 @router.get("/me")
 async def get_me(user_id: str = Depends(get_current_user)):
+	user = fake_users.get(int(user_id))
+	if not user:
+		raise HTTPException(
+			status_code=404,
+			detail="User not found"
+		)
 	return {"user_id": user_id}
 
 
