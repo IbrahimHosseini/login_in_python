@@ -12,7 +12,7 @@ user_router = APIRouter(prefix = "/users", tags = ["users"])
 next_id = 2
 
 #=========== CREATE USER ==============================
-@user_router.post("/create", response_model = ResponseUser, status_code = status.HTTP_201_CREATED)
+@user_router.post("/", response_model = ResponseUser, status_code = status.HTTP_201_CREATED)
 async def create_user(user: RequestUser):
 
 	global next_id
@@ -36,11 +36,10 @@ async def create_user(user: RequestUser):
 	return created_user
 
 #=========== GET USER BY ID ===========================
-@user_router.get("/users/{id}", response_model = ResponseUser)
+@user_router.get("/{id}", response_model = ResponseUser)
 async def get_user(id: int):
 
 	user = fake_users.get(id)
-
 
 	return ResponseUser(
 		id = user["id"],
@@ -48,7 +47,7 @@ async def get_user(id: int):
 	)
 
 #=========== UPDATE USER ===========================
-@user_router.put("/update/{id}", response_model = RequestUser)
+@user_router.put("/{id}", response_model = RequestUser)
 async def update_user(id: int, user: UpdateUser, current_user_id = Depends(get_current_user)):
 
 	if id != int(current_user_id):
@@ -58,17 +57,21 @@ async def update_user(id: int, user: UpdateUser, current_user_id = Depends(get_c
 		)
 
 	user_data = user.model_dump(exclude_unset = True)
+
+	if "password" in user_data:
+		user_data["password"] = hash_password(user_data["password"])
+
 	fake_users[id].update(user_data)
 
 	updated_user = fake_users.get(id)
 
 	return ResponseUser(
-		id = update_user["id"],
-		email = update_user["email"]
+		id = updated_user["id"],
+		email = updated_user["email"]
 	)
 
 #=========== DELETE USER ===========================
-@user_router.delete("/delete/{id}", status_code = status.HTTP_204_NO_CONTENT)
+@user_router.delete("/{id}", status_code = status.HTTP_204_NO_CONTENT)
 async def delete_user(id: int, current_user_id = Depends(get_current_user)):
 
 	if id != int(current_user_id):
@@ -77,7 +80,7 @@ async def delete_user(id: int, current_user_id = Depends(get_current_user)):
 			detail = "Not Authorized"
 		)
 
-	del fake_users['id']
+	del fake_users[id]
 
 
 

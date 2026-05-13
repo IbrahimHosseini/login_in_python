@@ -1,7 +1,6 @@
 # auth/router.py
 
 from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import OAuth2PasswordRequestForm
 from .schemas import Token, RefreshRequest, LoginRequest
 from .service import verify_token, create_access_token, create_refresh_token, verify_password, hash_password
 from .dependencies import get_current_user

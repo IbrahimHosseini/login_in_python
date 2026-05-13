@@ -8,7 +8,6 @@ class RequestUser(BaseModel):
 
 
 class UpdateUser(BaseModel):
-	id: int
 	email: str
 	password: str
 
