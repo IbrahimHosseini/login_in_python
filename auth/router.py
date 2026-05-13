@@ -1,7 +1,8 @@
 # auth/router.py
 
 from fastapi import APIRouter, HTTPException, Depends
-from .schemas import Token, RefreshRequest
+from fastapi.security import OAuth2PasswordRequestForm
+from .schemas import Token, RefreshRequest, LoginRequest
 from .service import verify_token, create_access_token, create_refresh_token, verify_password, hash_password
 from .dependencies import get_current_user
 
@@ -11,14 +12,14 @@ fake_users = {1: {"id": 1, "email": "user@test.com", "password": hash_password("
 refresh_tokens = set() # change with BD
 
 @router.post("/login", response_model = Token)
-async def login(email: str, password: str):
-	user = next((u for u in fake_users.values() if u["email"] == email), None)
+async def login(data: LoginRequest):
+	user = next((u for u in fake_users.values() if u["email"] == data.email), None)
 
 	if not user:
 		raise HTTPException(status_code = 401, detail = "Invalid credentials")
 
 	
-	if not verify_password(password, hashed = user["password"]):
+	if not verify_password(data.password, hashed = user["password"]):
 		raise HTTPException(status_code = 401, detail = "Invalid credentials")
 
 	access_token = create_access_token(user["id"])

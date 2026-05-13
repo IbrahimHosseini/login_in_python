@@ -12,3 +12,8 @@ class TokenData(BaseModel):
 
 class RefreshRequest(BaseModel):
     refresh_token: str
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
