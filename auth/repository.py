@@ -34,13 +34,16 @@ async def get_refresh_token(session: AsyncSession, token: str) -> RefreshToken |
 	return token
 
 
-async def revoke_refresh_token(session: AsyncSession, user_id: int):
+async def revoke_refresh_token(session: AsyncSession, token: str):
 	
 	result = await session.execute(
-			select(RefreshToken).where(RefreshToken.user_id == user_id)
+			select(RefreshToken).where(RefreshToken.token == token)
 		)
 
 	refresh_token = result.scalar_one_or_none()
+
+	if refresh_token is None:
+		return None
 
 	await session.delete(refresh_token)
 	await session.commit()

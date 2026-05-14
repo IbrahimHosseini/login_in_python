@@ -48,7 +48,7 @@ async def refresh(data: RefreshRequest, session = Depends(get_db)):
 		raise HTTPException(status_code = 401, detail = "Wrong token type")
 
 	user_id = refresh_token_data.user_id
-	revoked_token = await repository.revoke_refresh_token(session = session, user_id = user_id)
+	revoked_token = await repository.revoke_refresh_token(session = session, token = data.refresh_token)
 
 	new_access = create_access_token(user_id)
 	new_refresh = create_refresh_token(user_id)
@@ -79,7 +79,7 @@ async def logout(current_user_id = Depends(get_current_user), session = Depends(
 
 @router.get("/me")
 async def get_me(user_id: str = Depends(get_current_user), session = Depends(get_db)):
-	user = await get_user_by_id(session = session, id = user_id)
+	user = await get_user_by_id(session = session, id = int(user_id))
 
 	if user is None:
 		raise HTTPException(
