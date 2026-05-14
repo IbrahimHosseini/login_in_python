@@ -1,5 +1,6 @@
 {
   "info": {
+    "_postman_id": "login-api-collection",
     "name": "Login API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -170,9 +171,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/users/{{user_id}}",
+              "raw": "{{base_url}}/users/{{created_user_id}}",
               "host": ["{{base_url}}"],
-              "path": ["users", "{{user_id}}"]
+              "path": ["users", "{{created_user_id}}"]
             }
           }
         },
@@ -186,12 +187,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"user@test.com\",\n  \"password\": \"testpass123\"\n}"
+              "raw": "{\n  \"email\": \"updated@test.com\",\n  \"password\": \"newpass456\"\n}"
             },
             "url": {
-              "raw": "{{base_url}}/users/{{user_id}}",
+              "raw": "{{base_url}}/users/{{created_user_id}}",
               "host": ["{{base_url}}"],
-              "path": ["users", "{{user_id}}"]
+              "path": ["users", "{{created_user_id}}"]
             }
           }
         },
@@ -203,9 +204,9 @@
               { "key": "Authorization", "value": "Bearer {{access_token}}" }
             ],
             "url": {
-              "raw": "{{base_url}}/users/{{user_id}}",
+              "raw": "{{base_url}}/users/{{created_user_id}}",
               "host": ["{{base_url}}"],
-              "path": ["users", "{{user_id}}"]
+              "path": ["users", "{{created_user_id}}"]
             }
           }
         }

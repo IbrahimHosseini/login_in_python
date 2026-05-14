@@ -30,7 +30,7 @@ async def create_user(session: AsyncSession, user: UserRequest) -> User:
     
     new_user = User(
         email = user.email,
-        hashed_password = hash_password(user.hashed_password),
+        hashed_password = hash_password(user.password),
     )
 
     session.add(new_user)
