@@ -3,10 +3,6 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from auth.dependencies import get_current_user
 from .schemas import UserRequest, UserUpdateRequest, UserResponse
-from auth.service import hash_password
-from .repository import create_user
-from db.models import User
-from sqlalchemy.ext.asyncio import AsyncSession
 from db.session import get_db
 from . import repository
 
@@ -17,11 +13,11 @@ user_router = APIRouter(prefix = "/users", tags = ["users"])
 @user_router.post("/", response_model = UserResponse, status_code = status.HTTP_201_CREATED)
 async def create_user(user: UserRequest, session = Depends(get_db)):
 
-	create_user = await repository.create_user(session = session, user = user)
+	created_user = await repository.create_user(session = session, user = user)
 
 	return UserResponse(
-			id = create_user.id,
-			email = create_user.email
+			id = created_user.id,
+			email = created_user.email
 		)
 
 #=========== GET USER BY ID ===========================
@@ -30,7 +26,7 @@ async def get_user(id: int, session = Depends(get_db)):
 
 	user = await repository.get_user_by_id(session = session, id = id)
 
-	if user is not None:
+	if user is None:
 		raise HTTPException(
 			status_code = 404,
 			detail = "User not found"

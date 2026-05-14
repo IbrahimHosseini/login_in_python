@@ -1,7 +1,6 @@
 # repository.py
 
 from auth.service import hash_password
-from db import session
 from db.models import User
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
