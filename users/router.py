@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException, Depends, status
 from auth.dependencies import get_current_user
-from .schemas import RequestUser, UpdateUser, ResponseUser
+from .schemas import UserRequest, UserUpdateRequest, UserResponse
 from auth.service import hash_password
 from auth.router import fake_users
 
@@ -12,8 +12,8 @@ user_router = APIRouter(prefix = "/users", tags = ["users"])
 next_id = 2
 
 #=========== CREATE USER ==============================
-@user_router.post("/", response_model = ResponseUser, status_code = status.HTTP_201_CREATED)
-async def create_user(user: RequestUser):
+@user_router.post("/", response_model = UserResponse, status_code = status.HTTP_201_CREATED)
+async def create_user(user: UserRequest):
 
 	global next_id
 
@@ -28,7 +28,7 @@ async def create_user(user: RequestUser):
 
 	next_id += 1
 
-	created_user = ResponseUser(
+	created_user = UserResponse(
 		id = new_user["id"],
 		email = new_user["email"]
 	)
@@ -36,19 +36,19 @@ async def create_user(user: RequestUser):
 	return created_user
 
 #=========== GET USER BY ID ===========================
-@user_router.get("/{id}", response_model = ResponseUser)
+@user_router.get("/{id}", response_model = UserResponse)
 async def get_user(id: int):
 
 	user = fake_users.get(id)
 
-	return ResponseUser(
+	return UserResponse(
 		id = user["id"],
 		email = user["email"]
 	)
 
 #=========== UPDATE USER ===========================
-@user_router.put("/{id}", response_model = ResponseUser)
-async def update_user(id: int, user: UpdateUser, current_user_id = Depends(get_current_user)):
+@user_router.put("/{id}", response_model = UserResponse)
+async def update_user(id: int, user: UserUpdateRequest, current_user_id = Depends(get_current_user)):
 
 	if id != int(current_user_id):
 		raise HTTPException(
@@ -65,7 +65,7 @@ async def update_user(id: int, user: UpdateUser, current_user_id = Depends(get_c
 
 	updated_user = fake_users.get(id)
 
-	return ResponseUser(
+	return UserResponse(
 		id = updated_user["id"],
 		email = updated_user["email"]
 	)

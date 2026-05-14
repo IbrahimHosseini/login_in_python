@@ -2,16 +2,16 @@
 
 from pydantic import BaseModel, Field
 
-class RequestUser(BaseModel):
+class UserRequest(BaseModel):
 	email: str
 	password: str
 
 
-class UpdateUser(BaseModel):
+class UserUpdateRequest(BaseModel):
 	email: str
 	password: str
 
 
-class ResponseUser(BaseModel):
+class UserResponse(BaseModel):
 	id: int
 	email: str
