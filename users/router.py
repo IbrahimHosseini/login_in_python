@@ -4,51 +4,46 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from auth.dependencies import get_current_user
 from .schemas import UserRequest, UserUpdateRequest, UserResponse
 from auth.service import hash_password
-from auth.router import fake_users
+from .repository import create_user
+from db.models import User
+from sqlalchemy.ext.asyncio import AsyncSession
+from db.session import get_db
+from . import repository
 
 
 user_router = APIRouter(prefix = "/users", tags = ["users"])
 
-next_id = 2
-
 #=========== CREATE USER ==============================
 @user_router.post("/", response_model = UserResponse, status_code = status.HTTP_201_CREATED)
-async def create_user(user: UserRequest):
+async def create_user(user: UserRequest, session = Depends(get_db)):
 
-	global next_id
+	create_user = await repository.create_user(session = session, user = user)
 
-	new_user = {
-		"id": next_id,
-		"email": user.email,
-		"password": hash_password(user.password)
-	}
-
-
-	fake_users[next_id] = new_user
-
-	next_id += 1
-
-	created_user = UserResponse(
-		id = new_user["id"],
-		email = new_user["email"]
-	)
-
-	return created_user
+	return UserResponse(
+			id = create_user.id,
+			email = create_user.email
+		)
 
 #=========== GET USER BY ID ===========================
 @user_router.get("/{id}", response_model = UserResponse)
-async def get_user(id: int):
+async def get_user(id: int, session = Depends(get_db)):
 
-	user = fake_users.get(id)
+	user = await repository.get_user_by_id(session = session, id = id)
+
+	if user is not None:
+		raise HTTPException(
+			status_code = 404,
+			detail = "User not found"
+		)
 
 	return UserResponse(
-		id = user["id"],
-		email = user["email"]
+		id = user.id,
+		email = user.email
 	)
 
 #=========== UPDATE USER ===========================
 @user_router.put("/{id}", response_model = UserResponse)
-async def update_user(id: int, user: UserUpdateRequest, current_user_id = Depends(get_current_user)):
+async def update_user(id: int, user: UserUpdateRequest, current_user_id = Depends(get_current_user), session = Depends(get_db)):
 
 	if id != int(current_user_id):
 		raise HTTPException(
@@ -56,28 +51,38 @@ async def update_user(id: int, user: UserUpdateRequest, current_user_id = Depend
 			detail = "Not Authorized"
 		)
 
-	user_data = user.model_dump(exclude_unset = True)
+	updated_user = await repository.update_user(session = session, id = id, new_data = user)
 
-	if "password" in user_data:
-		user_data["password"] = hash_password(user_data["password"])
-
-	fake_users[id].update(user_data)
-
-	updated_user = fake_users.get(id)
+	if updated_user is None:
+		raise HTTPException(
+			status_code = 404,
+			detail = "User not found"
+		)
 
 	return UserResponse(
-		id = updated_user["id"],
-		email = updated_user["email"]
+		id = updated_user.id,
+		email = updated_user.email
 	)
 
 #=========== DELETE USER ===========================
 @user_router.delete("/{id}", status_code = status.HTTP_204_NO_CONTENT)
-async def delete_user(id: int, current_user_id = Depends(get_current_user)):
+async def delete_user(id: int, current_user_id = Depends(get_current_user), session = Depends(get_db)):
 
 	if id != int(current_user_id):
 		raise HTTPException(
 			status_code = 403,
 			detail = "Not Authorized"
 		)
+
+	deleted_user = await repository.delete_user(session = session, id = id)
 	
-	del fake_users[id]
+	if deleted_user is None:
+		raise HTTPException(
+			status_code = 404,
+			detail = "User not found"
+		)
+
+
+
+
+

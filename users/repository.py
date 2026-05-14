@@ -5,6 +5,7 @@ from db import session
 from db.models import User
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from .schemas import UserRequest, UserUpdateRequest
 
 
 async def get_user_by_email(session: AsyncSession, email: str) -> User | None:
@@ -26,7 +27,7 @@ async def get_user_by_id(session: AsyncSession, id: int) -> User | None:
 
     return user
 
-async def create_user(session: AsyncSession, user: User) -> User:
+async def create_user(session: AsyncSession, user: UserRequest) -> User:
     
     new_user = User(
         email = user.email,
@@ -39,7 +40,7 @@ async def create_user(session: AsyncSession, user: User) -> User:
 
     return new_user
 
-async def update_user(session: AsyncSession, id: int, new_data: User) -> User | None:
+async def update_user(session: AsyncSession, id: int, new_data: UserUpdateRequest) -> User | None:
     result = await session.execute(
         select(User).where(User.id == id)
     )
@@ -49,8 +50,12 @@ async def update_user(session: AsyncSession, id: int, new_data: User) -> User | 
     if user is None:
         return None
 
-    user.email = new_data.email
-    user.hashed_password = hash_password(new_data.hashed_password)
+    data = new_data.model_dump(exclude_unset = True)
+
+    if "email" in data:
+        user.email = data["email"]
+    if "password" in data:
+        user.hashed_password = hash_password(data["password"])
 
     await session.commit()
     await session.refresh(user)
