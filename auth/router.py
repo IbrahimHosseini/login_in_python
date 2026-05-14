@@ -74,13 +74,3 @@ async def get_me(user_id: str = Depends(get_current_user)):
 			detail="User not found"
 		)
 	return {"user_id": user_id}
-
-
-
-
-
-
-
-
-
-

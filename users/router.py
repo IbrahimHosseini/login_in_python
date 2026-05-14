@@ -81,32 +81,3 @@ async def delete_user(id: int, current_user_id = Depends(get_current_user)):
 		)
 	
 	del fake_users[id]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
