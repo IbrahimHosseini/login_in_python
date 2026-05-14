@@ -21,9 +21,9 @@ async def create_refresh_token(session: AsyncSession, token: str, user_id: int, 
 	return new_refresh_token
 
 
-async def get_refresh_token(session: AsyncSession, user_id: int) -> RefreshToken | None:
+async def get_refresh_token(session: AsyncSession, token: str) -> RefreshToken | None:
 	result = await session.execute(
-			select(RefreshToken).where(RefreshToken.user_id == user_id)
+			select(RefreshToken).where(RefreshToken.token == token)
 		)
 
 	token = result.scalar_one_or_none()
