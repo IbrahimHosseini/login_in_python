@@ -51,13 +51,13 @@ async def refresh(data: RefreshRequest, session = Depends(get_db)):
 	revoked_token = await repository.revoke_refresh_token(session = session, token = data.refresh_token)
 
 	new_access = create_access_token(user_id)
-	new_refresh = create_refresh_token(user_id)
+	new_refresh, new_expires_at = create_refresh_token(user_id)
 	
 	created_refresh_token = await repository.create_refresh_token(
 		session = session,
 		token = new_refresh,
 		user_id = user_id,
-		expires_at = refresh_token_data.expires_at
+		expires_at = new_expires_at
 		)
 
 	return Token(
