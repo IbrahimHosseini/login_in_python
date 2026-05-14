@@ -70,9 +70,9 @@ async def delete_user(id: int, current_user_id = Depends(get_current_user), sess
 			detail = "Not Authorized"
 		)
 
-	deleted_user = await repository.delete_user(session = session, id = id)
+	deleted = await repository.delete_user(session = session, id = id)
 	
-	if deleted_user is None:
+	if not deleted:
 		raise HTTPException(
 			status_code = 404,
 			detail = "User not found"

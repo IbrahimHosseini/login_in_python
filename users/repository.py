@@ -1,8 +1,8 @@
 # repository.py
 
 from auth.service import hash_password
-from db.models import User
-from sqlalchemy import select
+from db.models import RefreshToken, User
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from .schemas import UserRequest, UserUpdateRequest
 
@@ -62,7 +62,12 @@ async def update_user(session: AsyncSession, id: int, new_data: UserUpdateReques
     return user
 
 
-async def delete_user(session: AsyncSession, id: int):
+async def delete_user(session: AsyncSession, id: int) -> bool:
+
+    await session.execute(
+        delete(RefreshToken).where(RefreshToken.user_id == id)
+    )
+
     result = await session.execute(
         select(User).where(User.id == id)
     )
@@ -70,7 +75,9 @@ async def delete_user(session: AsyncSession, id: int):
     user = result.scalar_one_or_none()
 
     if user is None:
-        return None
+        return False
         
     await session.delete(user)
     await session.commit()
+
+    return True
