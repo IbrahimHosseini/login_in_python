@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from config import settings
 import bcrypt
+from typing import Tuple
 
 
 def create_access_token(user_id: int) -> str:
@@ -12,10 +13,10 @@ def create_access_token(user_id: int) -> str:
 	return jwt.encode(payload, settings.SECRET_KEY, algorithm = settings.ALGORITHM)
 
 
-def create_refresh_token(user_id: int) -> str:
+def create_refresh_token(user_id: int) -> Tuple[str, datetime]:
 	expire = datetime.utcnow() + timedelta(days = settings.REFRESH_TOKEN_EXPIRE_DAYS)
 	payload = {"sub": str(user_id), "exp": expire, "type": "refresh"}
-	return jwt.encode(payload, settings.SECRET_KEY, algorithm = settings.ALGORITHM)
+	return jwt.encode(payload, settings.SECRET_KEY, algorithm = settings.ALGORITHM), expire
 
 
 def verify_token(token: str) -> dict:

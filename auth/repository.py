@@ -42,8 +42,5 @@ async def revoke_refresh_token(session: AsyncSession, user_id: int):
 
 	refresh_token = result.scalar_one_or_none()
 
-	if refresh_token is None:
-		return None
-
 	await session.delete(refresh_token)
 	await session.commit()
