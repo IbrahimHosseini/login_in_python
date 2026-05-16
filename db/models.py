@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm.relationships import foreign
 from .base import Base
 from sqlalchemy.orm import relationship
+from typing import List
 
 class User(Base):
     __tablename__ = "users"
