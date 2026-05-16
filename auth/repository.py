@@ -1,4 +1,4 @@
-# repository.py
+# auth/repository.py
 
 from datetime import datetime
 from db.models import RefreshToken

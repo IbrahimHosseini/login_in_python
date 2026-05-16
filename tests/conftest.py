@@ -4,7 +4,7 @@ from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from users.repository import create_user
-from users import schemas
+from users.schemas import UserRequest
 
 from main import app
 from db.base import Base
@@ -52,9 +52,9 @@ async def client(db_session):
 async def test_user(db_session):
 	user = await create_user(
 			session = db_session,
-			user = schemas.UserRequest(
+			user = UserRequest(
 					email = "test@test.com",
 					password = "test@1234!"
-				)
-		)
+			)
+	)
 	return user
