@@ -1,0 +1,21 @@
+# Web
+fastapi
+uvicorn[standard]
+
+# Database
+sqlalchemy[asyncio]
+asyncpg
+alembic
+
+# Auth
+python-jose[cryptography]
+passlib[bcrypt]
+pydantic-settings
+
+# Testing
+pytest
+pytest-asyncio
+httpx
+
+# Linting
+ruff
