@@ -1,4 +1,4 @@
-# repository.py
+# users/repository.py
 
 from auth.service import hash_password
 from db.models import RefreshToken, User
@@ -34,7 +34,7 @@ async def create_user(session: AsyncSession, user: UserRequest) -> User:
     )
 
     session.add(new_user)
-    await session.commit()
+    await session.flush()
     await session.refresh(new_user)
 
     return new_user
@@ -56,7 +56,7 @@ async def update_user(session: AsyncSession, id: int, new_data: UserUpdateReques
     if "password" in data:
         user.hashed_password = hash_password(data["password"])
 
-    await session.commit()
+    await session.flush()
     await session.refresh(user)
 
     return user
@@ -78,6 +78,6 @@ async def delete_user(session: AsyncSession, id: int) -> bool:
         return False
         
     await session.delete(user)
-    await session.commit()
+    await session.flush()
 
     return True

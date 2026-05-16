@@ -1,7 +1,9 @@
-# service.py
+# auth/service.py
 
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
+from sqlalchemy.ext.asyncio import AsyncSession
+from auth import repository
 from config import settings
 import bcrypt
 from typing import Tuple
@@ -33,3 +35,8 @@ def hash_password(password: str) -> str:
 
 def verify_password(plain: str, hashed: str) -> bool:
 	return bcrypt.checkpw(plain.encode(), hashed.encode())
+
+
+async def revoke_refresh_token(session: AsyncSession, token: str):
+	await repository.revoke_refresh_token(session=session, token=token)
+	await session.commit()

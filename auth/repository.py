@@ -46,4 +46,4 @@ async def revoke_refresh_token(session: AsyncSession, token: str):
 		return None
 
 	await session.delete(refresh_token)
-	await session.commit()
+	await session.flush()
